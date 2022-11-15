@@ -46,7 +46,9 @@ double count;
 int main()
 {
   int move;
-  double x[npart * 3], vh[npart * 3], f[npart * 3];
+  double x[npart * 3]; // ovo su svi nizovi duzine 4 * 15 *15 * 15 * 3, ugl dugacki su x je pozicija
+  double vh[npart * 3]; // ovo su svi nizovi duzine 4 * 15 *15 * 15 * 3, ugl dugacki su, vh je brzina
+  double f[npart * 3]; // ovo su svi nizovi duzine 4 * 15 *15 * 15 * 3, ugl dugacki su, f je sila
   double ekin;
   double vel;
   double sc;
@@ -58,13 +60,13 @@ int main()
 
   double den = 0.83134;
   double side = pow((double)npart / den, 0.3333333);
-  double tref = 0.722;
+  double tref = 0.722; //konstanta
   double rcoff = (double)mm / 4.0;
-  double h = 0.064;
+  double h = 0.064; //konstanta
   int irep = 10;
   int istop = 20;
   int iprint = 5;
-  int movemx = 20;
+  int movemx = 20; //broj koraka = 20
 
   double a = side / (double)mm;
   double hsq = h * h;
@@ -91,19 +93,22 @@ int main()
   /*
    *  Generate fcc lattice for atoms inside box
    */
+
+
+  //ovo je inicijalizacija. Verovatno se moze paralelizovati unutar pojedinacnih funkcioja
   fcc(x, npart, mm, a);
   /*
    *  Initialise velocities and forces (which are zero in fcc positions)
    */
   mxwell(vh, 3 * npart, h, tref);
-  dfill(3 * npart, 0.0, f, 1);
+  dfill(3 * npart, 0.0, f, 1); //puni f sa vrednostima 0.0 (pitanje da li je potrebno)
   /*
    *  Start of md
    */
   printf("\n    i       ke         pe            e         temp   "
          "   pres      vel      rp\n  -----  ----------  ----------"
          "  ----------  --------  --------  --------  ----\n");
-
+  //Pitanje da li se prethodne funckije trebasju inicijalizovati jer se samo ovde broji vreme
   start = secnds();
 
   for (move = 1; move <= movemx; move++)

@@ -20,7 +20,7 @@ int prime_number(int n)
   int total;
 
   total = 0;
-
+  //treba redukcija po total i paralelizacija for pertlji
   for (i = 2; i <= n; i++)
   {
     prime = 1;
@@ -111,7 +111,7 @@ void test(int n_lo, int n_hi, int n_factor)
   while (n <= n_hi)
   {
     ctime = cpu_time();
-
+    //moze ovde da pocne paralelni region, ali moze i unutar funckiije. Bolje unutar funkcije jer se svakko ne poziva rekurzivno
     primes = prime_number(n);
 
     ctime = cpu_time() - ctime;

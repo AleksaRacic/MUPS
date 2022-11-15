@@ -11,6 +11,8 @@ int i4_ceiling(double x)
   return value;
 }
 
+
+//jako losa funkcija za min, moze se refaktorisati, 
 int i4_min(int i1, int i2)
 {
   int value;
@@ -102,7 +104,7 @@ int main(int arc, char **argv)
   double we;
   double wt;
   double z;
-
+  //ovde ne stiti od poziva bez argumenata
   int N = atoi(argv[1]);
   timestamp();
 
@@ -114,13 +116,13 @@ int main(int arc, char **argv)
 
   stepsz = sqrt((double)dim * h);
 
-  if (a == i4_min(i4_min(a, b), c))
+  if (a == i4_min(i4_min(a, b), c)) //ako je a najmanje
   {
     ni = 6;
     nj = 1 + i4_ceiling(b / a) * (ni - 1);
     nk = 1 + i4_ceiling(c / a) * (ni - 1);
   }
-  else if (b == i4_min(i4_min(a, b), c))
+  else if (b == i4_min(i4_min(a, b), c)) //ako je b najmanje
   {
     nj = 6;
     ni = 1 + i4_ceiling(a / b) * (nj - 1);
@@ -132,14 +134,16 @@ int main(int arc, char **argv)
     ni = 1 + i4_ceiling(a / c) * (nk - 1);
     nj = 1 + i4_ceiling(b / c) * (nk - 1);
   }
+  //ovo se moze lepse zapisati ali nema nekog efekta na ubrzanje
 
   err = 0.0;
   n_inside = 0;
-
+  //po ovim petljama se ne moze uraditi paralelizacija? Problem: za neke vrednosti ce se preskociti(continue), a pretpostavljam da su te vredsnosti blizu.
+  //Svakako treba testirati kada se radi paralelizacija na ovim for i na for kod trials
   for (i = 1; i <= ni; i++)
   {
     x = ((double)(ni - i) * (-a) + (double)(i - 1) * a) / (double)(ni - 1);
-
+    //nj je uvek 6
     for (j = 1; j <= nj; j++)
     {
       y = ((double)(nj - j) * (-b) + (double)(j - 1) * b) / (double)(nj - 1);
@@ -150,7 +154,7 @@ int main(int arc, char **argv)
 
         chk = pow(x / a, 2) + pow(y / b, 2) + pow(z / c, 2);
 
-        if (1.0 < chk)
+        if (1.0 < chk) //preskacu se trials ako je chk vece od 1
         {
           w_exact = 1.0;
           wt = 1.0;
@@ -167,6 +171,7 @@ int main(int arc, char **argv)
 
         wt = 0.0;
         steps = 0;
+        //tek se ovde moze raditi paralelizacija? Mislim da se definitivno ovde treba raditi paralelizacija, vrlo moguce dinamicki scheduling, jer ce trial u testovima biti >1000
         for (trial = 0; trial < N; trial++)
         {
           x1 = x;
@@ -231,7 +236,7 @@ int main(int arc, char **argv)
         wt = wt / (double)(N);
         steps_ave = steps / (double)(N);
 
-        err = err + pow(w_exact - wt, 2);
+        err = err + pow(w_exact - wt, 2); //redukcija po err definitivno
 
         // printf("  %7.4f  %7.4f  %7.4f  %10.4e  %10.4e  %10.4e  %8d\n",
         //        x, y, z, wt, w_exact, fabs(w_exact - wt), steps_ave);
