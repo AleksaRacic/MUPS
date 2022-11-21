@@ -1,0 +1,10 @@
+shopt -s nullglob
+for dir in ./*
+do
+    if [ -d $dir ];
+    then
+        cd $dir
+        bash run
+        cd ..
+    fi
+done

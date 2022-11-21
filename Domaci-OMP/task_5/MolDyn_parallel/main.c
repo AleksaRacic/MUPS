@@ -146,6 +146,11 @@ int main()
   time = secnds() - start;
 
   printf("Time =  %f\n", (float)time);
+  FILE *fpt;
+  fpt = fopen("MolDyn_parallel.csv", "a");
+  fprintf(fpt,"%d, %f\n", omp_get_max_threads(), time);
+  fclose(fpt);
+
 }
 
 time_t starttime = 0;

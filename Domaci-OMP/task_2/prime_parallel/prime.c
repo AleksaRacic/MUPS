@@ -89,11 +89,7 @@ int main(int argc, char *argv[])
     n_hi = atoi(argv[2]);
     n_factor = atoi(argv[3]);
   }
-
-  char file_name[50];
-  sprintf(file_name, "prime_parallel_%d_%d_%d.csv", n_lo, n_hi, n_factor);
-  fpt = fopen(file_name, "w");
-  fprintf(fpt,"N, Pi, Time\n");
+  fpt = fopen("prime_parallel.csv", "a");
   
   test(n_lo, n_hi, n_factor);
 
@@ -125,14 +121,14 @@ void test(int n_lo, int n_hi, int n_factor)
 
   while (n <= n_hi)
   {
-    ctime = cpu_time();
+    ctime = omp_get_wtime();
 
     primes = prime_number(n);
 
-    ctime = cpu_time() - ctime;
+    ctime = omp_get_wtime() - ctime;
 
     printf("  %8d  %8d  %14f\n", n, primes, ctime);
-    fprintf(fpt,"%8d,%8d,%14f\n", n, primes, ctime);
+    fprintf(fpt,"%d, %d ,%d,%f\n",omp_get_max_threads(), n, primes, ctime);
     n = n * n_factor;
   }
 

@@ -2,15 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-
-double cpu_time(void)
-{
-  double value;
-
-  value = (double)clock() / (double)CLOCKS_PER_SEC;
-
-  return value;
-}
+#include <omp.h>
 
 int i4_ceiling(double x)
 {
@@ -116,6 +108,9 @@ int main(int arc, char **argv)
 
   int N = atoi(argv[1]);
   timestamp();
+  //DODANO
+  double ctime;
+  ctime = omp_get_wtime();
 
   
 
@@ -124,10 +119,6 @@ int main(int arc, char **argv)
   printf("C = %f\n", c);
   printf("N = %d\n", N);
   printf("H = %6.4f\n", h);
-
-  //DODANO
-  double ctime;
-  ctime = cpu_time();
 
   stepsz = sqrt((double)dim * h);
 
@@ -265,16 +256,12 @@ int main(int arc, char **argv)
   printf("\n\nRMS absolute error in solution = %e\n", err);
 
   //DODANO
-  ctime = cpu_time() - ctime;
+  ctime = omp_get_wtime() - ctime;
   timestamp();
 
-  char file_name[50];
-  sprintf(file_name, "feyman_parallel_%d.csv", N);
-
   FILE *fpt;
-  fpt = fopen(file_name, "w");
-  fprintf(fpt,"N, Time, RMS\n");
-  fprintf(fpt,"%d, %f, %f\n", N, ctime, err);
+  fpt = fopen("feyman_parallel.csv", "a");
+  fprintf(fpt,"%d, %d, %f, %f\n", omp_get_max_threads(), N, err, ctime);
   fclose(fpt);
 
   return 0;

@@ -1,4 +1,12 @@
-./feyman 1000
-./feyman 5000
-./feyman 10000
-./feyman 20000
+allThreads=(1 2 4 8)
+
+echo "Num_Threads, N, RMS, Time" > feyman_parallel.csv
+
+for t in ${allThreads[@]}; do
+    OMP_NUM_THREADS=$t ./feyman 1000
+    OMP_NUM_THREADS=$t ./feyman 5000
+    OMP_NUM_THREADS=$t ./feyman 10000
+    OMP_NUM_THREADS=$t ./feyman 20000
+done
+
+

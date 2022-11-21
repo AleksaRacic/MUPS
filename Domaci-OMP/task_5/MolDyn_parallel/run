@@ -1,0 +1,7 @@
+allThreads=(1 2 4 8)
+
+echo "Thread_Num, Time" > MolDyn_parallel.csv
+
+for t in ${allThreads[@]}; do
+    OMP_NUM_THREADS=$t ./md
+done

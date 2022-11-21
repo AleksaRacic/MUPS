@@ -1,3 +1,11 @@
-./prime 1 131072 2
-./prime 5 500000 10
-./prime 1 65536 4
+allThreads=(1 2 4 8)
+
+echo "Num_Threads, N, Pi, Time" > prime_parallel.csv
+
+for t in ${allThreads[@]}; do
+    OMP_NUM_THREADS=$t ./prime 1 131072 2
+    OMP_NUM_THREADS=$t ./prime 5 500000 10
+    OMP_NUM_THREADS=$t ./prime 1 65536 4
+done
+
+
