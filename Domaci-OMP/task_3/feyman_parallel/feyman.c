@@ -187,7 +187,8 @@ int main(int arc, char **argv)
         #pragma omp parallel for default(none)\
                                   shared(N, h, stepsz, a, b, c, x, z, y, seed)\
                                   private(x1,x2,x3, trial, w, chk, ut, us, vh, dx, dy, dz, we, vs)\
-                                  reduction(+: steps, wt)
+                                  reduction(+: steps, wt)\
+                                  schedule(static, 10)
         for (trial = 0; trial < N; trial++)
         {
           x1 = x;
