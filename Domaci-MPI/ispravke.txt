@@ -1,0 +1,42 @@
+treba koristiti MPI_Wtime() za merenje vremena, u sustini njihov cpu_time ne vraca wall clock vreme jer se proces blokira na reduce(valjda)
+
+Code snippet za racunanje vremana(u sustini najranije zapoceto vreme i najkasnije zavrseno vreme, drugi nacin je da se koristi barijera na kraju)
+
+    mytime = MPI_Wtime(); /*get time just before work section */
+
+    work(myrank); /*need to create */
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    mytime = MPI_Wtime() - mytime; /*get time just after work section*/
+
+
+
+    /*compute max, min, and average timing statistics*/
+
+    MPI_Reduce(&mytime, &maxtime, 1, MPI_DOUBLE,MPI_MAX, 0, MPI_COMM_WORLD);
+
+    MPI_Reduce(&mytime, &mintime, 1, MPI_DOUBLE, MPI_MIN, 0,MPI_COMM_WORLD);
+
+    MPI_Reduce(&mytime, &avgtime, 1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
+
+    if (myrank == 0) 
+
+    {
+
+    avgtime /= numprocs;
+
+    printf("Min: %lf Max: %lf Avg: %lf\n", mintime, maxtime,avgtime);
+    }
+
+    MPI_Finalize ();
+
+Ideja: da pamtimo i koliko se svaki node izvrsavao tako mozemo da steknemo utisak da li smo dobro raspodelili load (za ovo nam je Misic srao za prvi zadatak)
+    Isto mozemo pratiti i cpu time kako bi videli da li imamo dosta blokiranja(ako stignemo)
+
+Za prime ne treba pamtiti svaki ran koliko je trajao jer svakako na kraju sabiramo(samo sam se dzabe jebao u exelu sa tim)
+Takodje necemo raditi optimizaciju na prime jer to prosli put nije zanimalo misica
+
+
+
+
