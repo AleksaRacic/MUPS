@@ -1,0 +1,10 @@
+allThreads=(1 2 3 4)
+
+echo "Num_Threads, N, RMS, MaxTime, MinTime, AvgTime" > feyman_MPI.csv
+
+for t in ${allThreads[@]}; do
+    mpirun -np $t ./feyman 1000
+    mpirun -np $t ./feyman 5000
+    mpirun -np $t ./feyman 10000
+    mpirun -np $t ./feyman 20000
+done

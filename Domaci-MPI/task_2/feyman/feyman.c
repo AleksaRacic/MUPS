@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <mpi.h>
+
+#define MASTER 0
 
 int i4_ceiling(double x)
 {
@@ -66,6 +69,9 @@ void timestamp(void)
 // print na stdout upotrebiti u validaciji paralelnog resenja
 int main(int arc, char **argv)
 {
+
+  MPI_Init(&arc, &argv);
+
   double a = 3.0;
   double b = 2.0;
   double c = 1.0;
@@ -102,15 +108,34 @@ int main(int arc, char **argv)
   double we;
   double wt;
   double z;
+  int rank;
+  int size;
+  double master_wt;
 
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  seed += rank;
+
+  if(size > 4){
+    MPI_Abort(MPI_COMM_WORLD, -1);
+  }
+
+
+  
   int N = atoi(argv[1]);
-  timestamp();
 
-  printf("A = %f\n", a);
-  printf("B = %f\n", b);
-  printf("C = %f\n", c);
-  printf("N = %d\n", N);
-  printf("H = %6.4f\n", h);
+  double my_time = MPI_Wtime();
+
+  if (rank == MASTER) {
+    timestamp();
+
+    printf("A = %f\n", a);
+    printf("B = %f\n", b);
+    printf("C = %f\n", c);
+    printf("N = %d\n", N);
+    printf("H = %6.4f\n", h);
+  }
 
   stepsz = sqrt((double)dim * h);
 
@@ -133,9 +158,19 @@ int main(int arc, char **argv)
     nj = 1 + i4_ceiling(b / c) * (nk - 1);
   }
 
+  int chunk_size = (N + size - 1) / size;
+  int start = rank * chunk_size;
+  int end = start + chunk_size > N ? N : start + chunk_size;
+
+  double master_err;
+  int master_n_inside;
+
   err = 0.0;
   n_inside = 0;
 
+  //DEBUG
+  int tot_trials = 0;
+      
   for (i = 1; i <= ni; i++)
   {
     x = ((double)(ni - i) * (-a) + (double)(i - 1) * a) / (double)(ni - 1);
@@ -167,8 +202,11 @@ int main(int arc, char **argv)
 
         wt = 0.0;
         steps = 0;
-        for (trial = 0; trial < N; trial++)
+
+        for (trial = start; trial < end; trial++)
         {
+          //DEBUG
+          tot_trials++;
           x1 = x;
           x2 = y;
           x3 = z;
@@ -228,20 +266,39 @@ int main(int arc, char **argv)
           }
           wt = wt + w;
         }
-        wt = wt / (double)(N);
-        steps_ave = steps / (double)(N);
-
-        err = err + pow(w_exact - wt, 2);
-
-        // printf("  %7.4f  %7.4f  %7.4f  %10.4e  %10.4e  %10.4e  %8d\n",
-        //        x, y, z, wt, w_exact, fabs(w_exact - wt), steps_ave);
+        MPI_Reduce(&wt, &master_wt, 1, MPI_DOUBLE, MPI_SUM, MASTER, MPI_COMM_WORLD);
+        if(rank == MASTER){
+          master_wt = master_wt / (double)(N);
+          err = err + pow(w_exact - master_wt, 2);
+        }
       }
+
+
     }
   }
-  err = sqrt(err / (double)(n_inside));
 
-  printf("\n\nRMS absolute error in solution = %e\n", err);
-  timestamp();
+  double maxtime, mintime, avgtime;
+
+  my_time = MPI_Wtime() - my_time;
+
+  MPI_Reduce(&my_time, &maxtime, 1, MPI_DOUBLE,MPI_MAX, MASTER, MPI_COMM_WORLD);
+  MPI_Reduce(&my_time, &mintime, 1, MPI_DOUBLE, MPI_MIN, MASTER, MPI_COMM_WORLD);
+  MPI_Reduce(&my_time, &avgtime, 1, MPI_DOUBLE, MPI_SUM, MASTER, MPI_COMM_WORLD);
+
+  if (rank == MASTER) {
+    err = sqrt(err / (double)(n_inside));
+
+    printf("\n\nRMS absolute error in solution = %e\n", err);
+    timestamp();
+
+    avgtime /= size;
+
+    FILE *fpt;
+    fpt = fopen("feyman_MPI.csv", "a");
+    fprintf(fpt,"%d, %d, %f, %f, %f, %f\n", size, N, err, maxtime, mintime, avgtime);
+    fclose(fpt);
+  }
+  MPI_Finalize();
 
   return 0;
 }

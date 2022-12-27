@@ -254,6 +254,8 @@ int main(int arc, char **argv)
       }
     }
   }
+
+  printf("-- %e, ni: %d", err, n_inside);
   err = sqrt(err / (double)(n_inside));
 
   printf("\n\nRMS absolute error in solution = %e\n", err);

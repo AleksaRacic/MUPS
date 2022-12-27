@@ -1,0 +1,9 @@
+allThreads=(1 2 3 4)
+
+echo "Size, MaxWallTime, MinWallTime, AvgWallTime, MaxCpuTime, MinCpuTime, AvgCpuTime" > prime_parallel_MPI.csv
+
+for t in ${allThreads[@]}; do
+    mpirun -np $t ./prime 1 131072 2
+    mpirun -np $t ./prime 5 500000 10
+    mpirun -np $t ./prime 1 65536 4
+done
