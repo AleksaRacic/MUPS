@@ -1,0 +1,7 @@
+allThreads=(1 2 3 4)
+
+echo "Thread_Num, Time" > MolDyn_parallel.csv
+
+for t in ${allThreads[@]}; do
+    mpirun -np $t ./md
+done

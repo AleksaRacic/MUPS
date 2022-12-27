@@ -175,6 +175,11 @@ int main()
     time = secnds() - start;
 
     printf("Time =  %f\n", (float)time);
+
+    FILE *fpt;
+    fpt = fopen("MolDyn_parallel.csv", "a");
+    fprintf(fpt,"%d, %f\n", size, time);
+    fclose(fpt);
   }
 
   MPI_Finalize();
