@@ -12,3 +12,50 @@
 5.  Prilikom upisa u memoriju se takođe treba izvršiti upis datog podatka u kešu
     Loša osobina protokola je da se ne ažurira keš memorija prilikom upisa u memoriju. Zbog toga će sledeći put prilikom čitanja iste memorijske lokacije nastati MISS u kešu i blok će morati da se dovlačiu iz memorije
     Mogu se ublažiti korišćenjem write allocate verzije WTI protokola
+
+6.  Blok A0 u kešu P2 će biti u stanju M jer se desio upis P2 u blok A0
+
+7.  Blok A0 u kešu P1 će biti u stanju S jer je čitao podatak koji se nalazi u stanju M u kešu P2
+
+8.  Suštinska razlika je da se blok upisuje u keš, a ne u memoriju. Tj. odlaže se upis u memoriju jer je to skuplja operacija
+
+9.  Blok A2 se ažurira u 7. koraku jer je blok u kešu P0 promenio stanje iz M u I. 
+    Biće opet ažuriran u koraku 8. jer ga P1 traži. U tom slučaju se stanje u kešu P2 menja iz M u S i dešava se operacija FLUSH.
+
+10. Dostavlja se iz keša P1, Podatak A0 je u stanju S.
+
+11. Vrsi se akcija CACHE TO CACHE TRANSFER prilikom koje se vrednost koje je bila na SHARED keš linijama upisuje u memoriju i u keš gde se vrši upis radi konzistencije podataka u memoriji.
+
+12. U stanju M jer je izvrsen upis
+
+13. Ne vrše se nikakve akcije protokola jer se blok A2 nalazi u kešu u stanju M što znači da je blok ažuran.
+
+14. Biće u stanju M. P1 iz O prelazi u I i radi operaciju FLUSH. Dok P0 prelazi iz S u I.
+
+15. Biće u stanju O jer je blok bio Modified, a P1 je tražio taj blok.
+    P1 je blok A0 dobio o P2 i A0 u njegovoj keš liniji ima stanje S.
+
+16. Biće u stanju S jer deli blok A2 sa P2.
+
+17. Hoće biti ažurirana prethodnom vrednošću koji je A2 imao u keševima drugih porocesora.
+
+18. Stanje A0
+        P0: Sc
+        P1: Sc
+        P2: Sm
+    Vrednost A0: 2
+    
+19. Memorija nije ažurirana. 
+    Razlika u odnosu na poništavajuće protokole je to što ostale keš linije koije su sadržavale A0 nisu proglašene nevalidnim nego su vrednosti ažurirane.
+
+20. Zato što se blok nije nalazio ni u jednom drugom kešu. Određuje se na osnovu stanja signala Shared. Prilikom zamene se nije desila akcija FLUSH jer stanje nije Sm ili M.
+
+21. Ostaće u stanju M.
+
+22. Nalazi se u stanju Sd. Označava da je podatak deljen i da je "čist" tj. da vrednost nije modifikovana. Ekvivalentje stanje Sc.
+
+23. Ne ažurira se memorija jer nema potrebe da se ažurira. Ažuriranje se dešava tek kada neki drugi procesor zatraži isti blok.
+
+24. Dešava se akcija TRANSFER. Podatak A2 se dostavlja iz P0 i P2.
+
+15. Memorija jeste ažurna. A2 se nalazi u stanju Sd.
