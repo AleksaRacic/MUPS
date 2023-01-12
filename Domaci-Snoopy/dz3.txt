@@ -1,0 +1,14 @@
+1.  P0: 3 pristupa 0% HR 
+    P1: 4 pristupa 0% HR
+    P2: 2 pristupa 0% HR
+    P3: 1 pristup  0% HR
+
+2.  DA
+
+3.  U koraku 4 P1 čita vrednost sa lokacija A0. Traženio podatak se ne nalazi u kešu pa se podatak dostavlja iz memorije
+
+4.  DA
+
+5.  Prilikom upisa u memoriju se takođe treba izvršiti upis datog podatka u kešu
+    Loša osobina protokola je da se ne ažurira keš memorija prilikom upisa u memoriju. Zbog toga će sledeći put prilikom čitanja iste memorijske lokacije nastati MISS u kešu i blok će morati da se dovlačiu iz memorije
+    Mogu se ublažiti korišćenjem write allocate verzije WTI protokola
