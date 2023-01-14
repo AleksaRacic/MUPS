@@ -59,4 +59,4 @@
 
 24. Dešava se akcija TRANSFER. Podatak A2 se dostavlja iz P0 i P2.
 
-15. Memorija jeste ažurna. A2 se nalazi u stanju Sd.
+25. Memorija jeste ažurna. A2 se nalazi u stanju Sd.
