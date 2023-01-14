@@ -5,11 +5,11 @@
 
 2.  DA
 
-3.  U koraku 4 P1 čita vrednost sa lokacija A0. Traženio podatak se ne nalazi u kešu pa se podatak dostavlja iz memorije
+3.  U koraku 4 P1 čita vrednost sa lokacija A0. Traženi podatak se ne nalazi u kešu pa se podatak dostavlja iz memorije
 
 4.  DA
 
-5.  Prilikom upisa u memoriju se takođe treba izvršiti upis datog podatka u kešu
+5.  Prilikom upisa u memoriju se takođe treba izvršiti upis datog podatka u keš.
     Loša osobina protokola je da se ne ažurira keš memorija prilikom upisa u memoriju. Zbog toga će sledeći put prilikom čitanja iste memorijske lokacije nastati MISS u kešu i blok će morati da se dovlačiu iz memorije
     Mogu se ublažiti korišćenjem write allocate verzije WTI protokola
 
@@ -21,10 +21,11 @@
 
 9.  Blok A2 se ažurira u 7. koraku jer je blok u kešu P0 promenio stanje iz M u I. 
     Biće opet ažuriran u koraku 8. jer ga P1 traži. U tom slučaju se stanje u kešu P2 menja iz M u S i dešava se operacija FLUSH.
+    Neće biti ažuran jer će P3 upisati novu vrednost u svoj keš, ne i memoriju
 
 10. Dostavlja se iz keša P1, Podatak A0 je u stanju S.
 
-11. Vrsi se akcija CACHE TO CACHE TRANSFER prilikom koje se vrednost koje je bila na SHARED keš linijama upisuje u memoriju i u keš gde se vrši upis radi konzistencije podataka u memoriji.
+11. Dešava se arbitracija ko od P0, P1 i memorije treba poslati podatak kešu P2.
 
 12. U stanju M jer je izvrsen upis
 
@@ -46,13 +47,13 @@
     Vrednost A0: 2
     
 19. Memorija nije ažurirana. 
-    Razlika u odnosu na poništavajuće protokole je to što ostale keš linije koije su sadržavale A0 nisu proglašene nevalidnim nego su vrednosti ažurirane.
+    Razlika u odnosu na poništavajuće protokole je to što ostale keš linije koje su sadržavale A0 nisu proglašene nevalidnim nego su vrednosti ažurirane.
 
 20. Zato što se blok nije nalazio ni u jednom drugom kešu. Određuje se na osnovu stanja signala Shared. Prilikom zamene se nije desila akcija FLUSH jer stanje nije Sm ili M.
 
 21. Ostaće u stanju M.
 
-22. Nalazi se u stanju Sd. Označava da je podatak deljen i da je "čist" tj. da vrednost nije modifikovana. Ekvivalentje stanje Sc.
+22. Nalazi se u stanju Sd. Označava da je podatak deljen(Shared) i da je "čist" tj. da vrednost nije modifikovana(not dirty). Ekvivalentje stanje Sc.
 
 23. Ne ažurira se memorija jer nema potrebe da se ažurira. Ažuriranje se dešava tek kada neki drugi procesor zatraži isti blok.
 
