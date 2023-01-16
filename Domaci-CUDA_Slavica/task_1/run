@@ -1,0 +1,9 @@
+echo "Type, TotalTime" > task_1.csv
+
+./prime 1 131072 2
+./prime 5 500000 10
+./prime 1 65536 4
+
+./prime_seq 1 131072 2
+./prime_seq 5 500000 10
+./prime_seq 1 65536 4
