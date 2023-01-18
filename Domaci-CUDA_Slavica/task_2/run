@@ -1,0 +1,17 @@
+make clean
+
+make
+
+make sequential
+
+echo "Type, N, err, TotalTime" > task_2.csv
+
+./feyman 1000
+./feyman 5000
+./feyman 10000
+./feyman 20000
+
+./feyman_seq 1000
+./feyman_seq 5000
+./feyman_seq 10000
+./feyman_seq 20000
