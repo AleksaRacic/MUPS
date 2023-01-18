@@ -1,0 +1,12 @@
+echo "Device, Time" > task_3.csv
+
+cd cuda
+make clean
+make
+./md
+cd ..
+cd sequential
+make clean
+make
+./md
+cd ..
